@@ -1,6 +1,7 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe';
 import * as searchView from './views/searchView';
+import * as recipeView from './views/recipeView';
 import { elements, renderLoader, clearLoader } from './views/base';
 
 /** Global state of the app
@@ -17,8 +18,7 @@ const state = {};
 
 const controlSearch = async () => {
     // 1) Get query from view
-    // const query = searchView.getInput();
-    const query = 'pizza';
+    const query = searchView.getInput();
 
     if (query) {
         // 2) New search object and add to state
@@ -37,7 +37,6 @@ const controlSearch = async () => {
             clearLoader();
             searchView.renderResults(state.search.result);
         } catch (err) {
-            alert('Something wrong with the search...');
             clearLoader();
         }
     }
@@ -45,13 +44,6 @@ const controlSearch = async () => {
 
 
 elements.searchForm.addEventListener('submit', e => {
-    e.preventDefault();
-    controlSearch();
-});
-
-// TESTING 
-
-window.addEventListener('load', e => {
     e.preventDefault();
     controlSearch();
 });
@@ -79,12 +71,10 @@ const controlRecipe = async () => {
         // Create new recipe object
         state.recipe = new Recipe(id);
 
-        // TESTING
-        window.r = state.recipe;
-
         try {
-            // Get recipe data
+            // Get recipe data and parse ingredients
             await state.recipe.getRecipe();
+            state.recipe.parseIngredients();
 
             // Calculate servings and time
             state.recipe.calcTime();
@@ -93,7 +83,7 @@ const controlRecipe = async () => {
             // render recipe
             console.log(state.recipe);
         } catch (err) {
-            alert('Error processing recipe!');
+
         }
     }
 };
