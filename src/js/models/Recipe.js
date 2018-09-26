@@ -6,7 +6,7 @@ export default class Recipe {
         this.id = id;
     }
 
-    async getREcipe() {
+    async getRecipe() {
         try {
             const res = await axios(`${proxy}https://www.food2fork.com/api/get?key=${key}&rId=${this.id}`);
             this.title = res.data.recipe.title;
@@ -16,5 +16,16 @@ export default class Recipe {
             this.ingredients = res.data.recipe.ingredients;
         } catch (error) {
         }
+    }
+
+    calcTime() {
+        // Assuming that we need 15 min for each 3 ingredients
+        const numIng = this.ingredients.length;
+        const periods = Math.ceil(numIng / 3);
+        this.time = periods * 15;
+    }
+
+    calcServings() {
+        this.servings = 4;
     }
 }

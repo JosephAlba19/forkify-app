@@ -53,7 +53,7 @@ elements.searchResPages.addEventListener('click', e => {
 
 /**
  * RECIPE CONTROLLER
- */
+*/
 
 const r = new Recipe(46956);
 r.getRecipe();
