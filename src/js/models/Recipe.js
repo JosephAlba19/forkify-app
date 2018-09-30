@@ -8,14 +8,15 @@ export default class Recipe {
 
     async getRecipe() {
         try {
-            const res = await axios(`${proxy}https://www.food2fork.com/api/get?key=${key}&rId=${this.id}`);
+            const res = await axios(`${proxy}http://food2fork.com/api/get?key=${key}&rId=${this.id}`);
             this.title = res.data.recipe.title;
             this.author = res.data.recipe.publisher;
             this.img = res.data.recipe.image_url;
             this.url = res.data.recipe.source_url;
             this.ingredients = res.data.recipe.ingredients;
         } catch (error) {
-
+            console.log(error);
+            alert('Something went wrong :(');
         }
     }
 
@@ -41,6 +42,7 @@ export default class Recipe {
             unitsLong.forEach((unit, i) => {
                 ingredient = ingredient.replace(unit, unitsShort[i]);
             });
+
             // 2) Remove parentheses
             ingredient = ingredient.replace(/ *\([^)]*\) */g, ' ');
 
@@ -51,10 +53,10 @@ export default class Recipe {
             let objIng;
             if (unitIndex > -1) {
                 // There is a unit
-                // Ex. 41/2 cups, arrCount is [4, 1/2]
+                // Ex. 4 1/2 cups, arrCount is [4, 1/2] --> eval("4+1/2") --> 4.5
                 // Ex. 4 cups, arrCount is [4]
-
                 const arrCount = arrIng.slice(0, unitIndex);
+
                 let count;
                 if (arrCount.length === 1) {
                     count = eval(arrIng[0].replace('-', '+'));
@@ -69,7 +71,7 @@ export default class Recipe {
                 };
 
             } else if (parseInt(arrIng[0], 10)) {
-                // There is NO unit, but the 1st element is a number
+                // There is NO unit, but 1st element is number
                 objIng = {
                     count: parseInt(arrIng[0], 10),
                     unit: '',
@@ -84,7 +86,6 @@ export default class Recipe {
                 }
             }
 
-
             return objIng;
         });
         this.ingredients = newIngredients;
@@ -96,10 +97,9 @@ export default class Recipe {
 
         // Ingredients
         this.ingredients.forEach(ing => {
-            ing.count *= ing.count * (newServings / this.servings);
-        })
+            ing.count *= (newServings / this.servings);
+        });
 
         this.servings = newServings;
-
     }
 }
